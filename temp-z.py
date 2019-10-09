@@ -11,7 +11,6 @@ mass_table={'OW':16*rNA,
             'MW':0*rNA,
             'CL':35.5*rNA,
             'NA':23*rNA}
-NA=6.02*pow(10,23)
 kb=1.38064852*pow(10,(-24))
 rkb=1/kb
 dz=0.1  #nm
