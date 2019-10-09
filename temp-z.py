@@ -1,7 +1,7 @@
 import groio
 import pandas as pd
-import numpy
-title,atom,box=groio.parse_file("./data/0.gro")
+
+title,atom,box= groio.parse_file("./data/0.gro")
 NA=6.02*pow(10,23)
 rNA=1/NA
 mass_table={'OW':16*rNA,
