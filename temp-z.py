@@ -44,14 +44,28 @@ def get_temp_vs_z(file):
 df = pd.DataFrame(columns=['z', 'T'])
 files = os.listdir(path)
 plt.figure(figsize=(5, 4))
-for file in files:
-    print(file)
+for file in range(100,401,1):
+    filepath=path+(str(file))+".gro"
+    print(filepath)
     if len(df) == 0:
-        df = get_temp_vs_z((path + file))
-        plt.plot(df['z'], df['T'])
-        print(df)
+        df = get_temp_vs_z((filepath))
+        dftemp=df
+
         continue
-    data = get_temp_vs_z((path + file))
+    data = get_temp_vs_z((filepath))
     df.index = data.index
-    df['T'] = (df['T'] + data['T']) / 2
-    df.to_csv("Tempvsz")
+
+
+    df['T'] = (df['T'] + data['T'])
+    df['Ttemp']=df['T']
+
+    df['Tavg']=df['Ttemp'].map(lambda x: x/(file-99))
+
+    try:
+        data.to_csv(str(file)+"Tempvsz.csv", columns=['z', 'Tavg'])
+        df.to_csv("Tempvsz.csv",columns= ['z','Tavg'])
+    except OSError:
+        pass
+
+
+
