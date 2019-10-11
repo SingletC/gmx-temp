@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-path = "./data/"
+path = "./100nm-0/"
 NA=6.02e23
 rNA=1/NA*0.001   # g to kg
 mass_table={'OW':16*rNA,
@@ -30,14 +30,16 @@ def get_temp_vs_z(file):
     ###inital Dataframe
     df=pd.DataFrame(atom)
     del atom
-    df['atom_name']=df['atom_name'].astype(str)
+    df=df.drop(columns=['resid','resname','atomid'])
     df=df[df['atom_name']!='MW' ]  # delete lone pair
-
     df['m']=(df['atom_name'].map(lambda x:mass_table[x[0:2]]))
     df['T']=(df.apply(lambda x: (x['vx']*x['vx']+x['vy']*x['vy']+x['vz']*x['vz'])*0.5*x['m']*1e6*2*rkb,1))
     df['T']=(df.apply(lambda x: (x['T']/deg_freedom[x['atom_name'][0:2]]),1))
+    df=df[['z','T']]
     df.sort_values(by='z',inplace=True)
-    df['T']=df['T'].rolling(rolling_windows).mean(center=True)
+    df.index = pd.date_range('1/1/2000', periods=len(df), freq='s')
+    df= (pd.DataFrame (df[['T','z']].resample('200s').mean() ))
+    df.reset_index(drop=True,inplace=False)
     return df[['z','T']]
 
 
@@ -62,8 +64,8 @@ for file in range(100,401,1):
     df['Tavg']=df['Ttemp'].map(lambda x: x/(file-99))
 
     try:
-        data.to_csv(str(file)+"Tempvsz.csv", columns=['z', 'Tavg'])
-        df.to_csv("Tempvsz.csv",columns= ['z','Tavg'])
+        data.to_csv(path+str(file)+"Tempvsz.csv", columns=['z', 'T'])
+        df.to_csv(path+"Tempvsz.csv",columns= ['z','Tavg'],index =False)
     except OSError:
         pass
 
